@@ -6,7 +6,13 @@ package it.polito.tdp.food;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.Set;
+
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.SimpleWeightedGraph;
+
 import it.polito.tdp.food.model.Model;
+import it.polito.tdp.food.model.Portion;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -40,7 +46,7 @@ public class FoodController {
     private Button btnCammino; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxPorzioni"
-    private ComboBox<?> boxPorzioni; // Value injected by FXMLLoader
+    private ComboBox<Portion> boxPorzioni; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
@@ -54,14 +60,32 @@ public class FoodController {
     @FXML
     void doCorrelate(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Cerco porzioni correlate...");
-    	
+    	txtResult.appendText("Cerco porzioni correlate...\n");
+    	Portion porzione=this.boxPorzioni.getValue();
+    	Portion porz;
+    	SimpleWeightedGraph<Portion, DefaultWeightedEdge> grafo=model.getGrafo();
+    	for (DefaultWeightedEdge arco :this.model.cercaVicini(porzione)) {
+    		if(!grafo.getEdgeSource(arco).equals(porzione)) {
+    			porz=grafo.getEdgeSource(arco);
+    		}
+    		else
+    			porz=grafo.getEdgeTarget(arco);
+    		this.txtResult.appendText(porz+" con peso "+grafo.getEdgeWeight(arco)+"\n");
+    	}
+    	this.txtResult.appendText("FINE!\n");
     }
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
     	txtResult.clear();
+    	this.boxPorzioni.getItems().clear();
     	txtResult.appendText("Creazione grafo...");
+    	if(!this.isNumeric(this.txtCalorie.getText())) {
+    		this.txtResult.setText("DEVI INSERIRE UN NUMERO INTERO!");
+    		return;
+    	}
+    	int calorie=Integer.parseInt(this.txtCalorie.getText());
+    	this.boxPorzioni.getItems().addAll(model.creaGrafo(calorie));
     	
     }
 
@@ -80,4 +104,13 @@ public class FoodController {
     public void setModel(Model model) {
     	this.model = model;
     }
+    
+    public static boolean isNumeric(String str) { 
+  	  try {  
+  	    Integer.parseInt(str);  
+  	    return true;
+  	  } catch(NumberFormatException e){  
+  	    return false;  
+  	  }  
+  	}
 }

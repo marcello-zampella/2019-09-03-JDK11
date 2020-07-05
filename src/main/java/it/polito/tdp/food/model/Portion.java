@@ -19,6 +19,11 @@ public class Portion {
 		this.food_code = food_code;
 	}
 	
+	public Portion(int int1, String string) {
+		this.portion_id=int1;
+		this.portion_display_name=string;
+	}
+
 	public Integer getPortion_id() {
 		return portion_id;
 	}
