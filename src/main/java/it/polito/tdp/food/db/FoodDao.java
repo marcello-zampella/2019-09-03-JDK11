@@ -113,13 +113,15 @@ public class FoodDao {
 	}
 
 	public ArrayList<String> listCondimentCalories(int calorie) {
-		String sql = "SELECT DISTINCT(p.portion_display_name) AS conta " + 
+		String sql = "SELECT DISTINCT(p.portion_display_name) AS nome " + 
 				"FROM portion p " + 
-				"WHERE p.calories<? " ;
+				"WHERE p.calories<=? " ;
 		try {
 			Connection conn = DBConnect.getConnection() ;
 
 			PreparedStatement st = conn.prepareStatement(sql) ;
+			
+			System.out.println(calorie);
 			
 			st.setInt(1, calorie);
 			
@@ -130,7 +132,7 @@ public class FoodDao {
 			while(res.next()) {
 				try {
 					list.add(
-							res.getString("nome")
+							res.getString("nome").toLowerCase()
 							);
 				} catch (Throwable t) {
 					t.printStackTrace();
@@ -148,14 +150,17 @@ public class FoodDao {
 	}
 
 	public ArrayList<Collegamento> getCollegamenti(int calorie) {
-		String sql = "SELECT p.portion_id AS p1, p.portion_display_name AS nome1, p2.portion_id AS p2, p2.portion_display_name AS nome2, COUNT(DISTINCT f.food_code) AS conto " + 
+		String sql = "SELECT  p.portion_display_name AS nome1, p2.portion_display_name AS nome2, COUNT(DISTINCT f.food_code) AS conto " + 
 				"FROM portion p, portion p2, food f " + 
-				"WHERE f.food_code=p.food_code AND f.food_code=p2.food_code AND p.calories<? AND p2.calories<? AND p.portion_id>p2.portion_id " + 
+				"WHERE f.food_code=p.food_code AND f.food_code=p2.food_code AND p.calories<=? AND p2.calories<=? AND p.portion_id>p2.portion_id " + 
 				"GROUP BY p.portion_display_name, p.portion_display_name " ;
 		try {
 			Connection conn = DBConnect.getConnection() ;
 
 			PreparedStatement st = conn.prepareStatement(sql) ;
+			
+			System.out.println(calorie);
+
 			
 			st.setInt(1, calorie);
 			st.setInt(2, calorie);
@@ -166,8 +171,8 @@ public class FoodDao {
 			
 			while(res.next()) {
 				try {
-					list.add(new Collegamento(new Portion(res.getInt("p1"),res.getString("nome1")),
-							new Portion(res.getInt("p2"),res.getString("nome2")),
+					list.add(new Collegamento(res.getString("nome1").toLowerCase(),
+							res.getString("nome2").toLowerCase(),
 							res.getInt("conto")));
 					} catch (Throwable t) {
 					t.printStackTrace();

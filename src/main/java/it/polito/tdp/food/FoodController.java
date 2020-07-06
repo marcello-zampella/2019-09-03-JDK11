@@ -5,6 +5,7 @@
 package it.polito.tdp.food;
 
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -13,6 +14,7 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 
 import it.polito.tdp.food.model.Model;
 import it.polito.tdp.food.model.Portion;
+import it.polito.tdp.food.model.Vicino;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -46,7 +48,7 @@ public class FoodController {
     private Button btnCammino; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxPorzioni"
-    private ComboBox<Portion> boxPorzioni; // Value injected by FXMLLoader
+    private ComboBox<String> boxPorzioni; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
@@ -54,24 +56,38 @@ public class FoodController {
     @FXML
     void doCammino(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Cerco cammino peso massimo...");
+    	txtResult.appendText("Cerco cammino peso massimo... \n");
+    	if(!this.isNumeric(this.txtPassi.getText())) {
+    		this.txtResult.setText("DEVI INSERIRE UN NUMERO INTERO \n");
+    		return;
+    	}
+    LinkedList<Vicino> finale=model.cercaCammino(porzione, Integer.parseInt(this.txtPassi.getText()));
+    if(finale==null) {
+    	this.txtResult.appendText("Nessun risultato trovato per il numero di passi richiesto! \n");
+    	return;
+    }else {
+    	int cont=1;
+    for(Vicino v: finale) {
+    	this.txtResult.appendText("Passo "+cont+": "+v.getVicino()+"\n");
+    	cont++;
+    }
+	this.txtResult.appendText("Peso totale = "+model.getTotale());
+
+    }
+    	
     }
     
-    SimpleWeightedGraph<Portion, DefaultWeightedEdge> grafo;
+    SimpleWeightedGraph<String, DefaultWeightedEdge> grafo;
+    String porzione;
 
     @FXML
     void doCorrelate(ActionEvent event) {
     	txtResult.clear();
     	txtResult.appendText("Cerco porzioni correlate...\n");
-    	Portion porzione=this.boxPorzioni.getValue();
-    	Portion porz;
-    	for (DefaultWeightedEdge arco :this.model.cercaVicini(porzione)) {
-    		if(!grafo.getEdgeSource(arco).equals(porzione)) {
-    			porz=grafo.getEdgeSource(arco);
-    		}
-    		else
-    			porz=grafo.getEdgeTarget(arco);
-    		this.txtResult.appendText(porz+" con peso "+grafo.getEdgeWeight(arco)+"\n");
+    	porzione=this.boxPorzioni.getValue();
+    	String porz;
+    	for (Vicino vic :this.model.cercaVicini(porzione)) {
+    		this.txtResult.appendText(vic.getVicino()+" con peso "+vic.getPeso()+"\n");
     	}
     	this.txtResult.appendText("FINE!\n");
     }
