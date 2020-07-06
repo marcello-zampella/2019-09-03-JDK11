@@ -148,10 +148,10 @@ public class FoodDao {
 	}
 
 	public ArrayList<Collegamento> getCollegamenti(int calorie) {
-		String sql = "SELECT p.portion_id AS p1, p.portion_display_name AS nome1, p2.portion_id AS p2, p2.portion_display_name AS nome2, count(f.food_code) AS conto " + 
+		String sql = "SELECT p.portion_id AS p1, p.portion_display_name AS nome1, p2.portion_id AS p2, p2.portion_display_name AS nome2, COUNT(f.food_code) AS conto " + 
 				"FROM portion p, portion p2, food f " + 
 				"WHERE f.food_code=p.food_code AND f.food_code=p2.food_code AND p.calories<? AND p2.calories<? AND p.portion_id>p2.portion_id " + 
-				"GROUP BY p.portion_id,p2.portion_id " ;
+				"GROUP BY p.portion_display_name, p.portion_display_name " ;
 		try {
 			Connection conn = DBConnect.getConnection() ;
 

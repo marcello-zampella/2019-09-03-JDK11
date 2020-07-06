@@ -56,6 +56,8 @@ public class FoodController {
     	txtResult.clear();
     	txtResult.appendText("Cerco cammino peso massimo...");
     }
+    
+    SimpleWeightedGraph<Portion, DefaultWeightedEdge> grafo;
 
     @FXML
     void doCorrelate(ActionEvent event) {
@@ -63,7 +65,6 @@ public class FoodController {
     	txtResult.appendText("Cerco porzioni correlate...\n");
     	Portion porzione=this.boxPorzioni.getValue();
     	Portion porz;
-    	SimpleWeightedGraph<Portion, DefaultWeightedEdge> grafo=model.getGrafo();
     	for (DefaultWeightedEdge arco :this.model.cercaVicini(porzione)) {
     		if(!grafo.getEdgeSource(arco).equals(porzione)) {
     			porz=grafo.getEdgeSource(arco);
@@ -86,6 +87,8 @@ public class FoodController {
     	}
     	int calorie=Integer.parseInt(this.txtCalorie.getText());
     	this.boxPorzioni.getItems().addAll(model.creaGrafo(calorie));
+    	grafo=model.getGrafo();
+    	this.txtResult.setText("Creato grafo con "+grafo.vertexSet().size()+" vertici e "+grafo.edgeSet().size()+" archi" );
     	
     }
 
