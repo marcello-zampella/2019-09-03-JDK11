@@ -12,7 +12,7 @@ import it.polito.tdp.food.db.FoodDao;
 public class Model {
 	
 	private FoodDao dao;
-	private SimpleWeightedGraph<Portion, DefaultWeightedEdge> grafo;
+	private SimpleWeightedGraph<String, DefaultWeightedEdge> grafo;
 	
 	public Model() {
 		dao= new FoodDao();
@@ -20,7 +20,7 @@ public class Model {
 
 	public ArrayList<Portion> creaGrafo(int calorie) {
 		this.grafo= new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
-		ArrayList<Portion> porzioni=this.dao.listCondimentCalories(calorie);
+		ArrayList<String> porzioni=this.dao.listCondimentCalories(calorie);
 		Graphs.addAllVertices(grafo, porzioni);
 		ArrayList<Collegamento> coll=dao.getCollegamenti(calorie);
 		for(Collegamento c: coll) {

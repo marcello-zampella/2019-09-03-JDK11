@@ -112,8 +112,8 @@ public class FoodDao {
 
 	}
 
-	public ArrayList<Portion> listCondimentCalories(int calorie) {
-		String sql = "SELECT DISTINCT(p.portion_id) AS conta, p.portion_display_name AS nome " + 
+	public ArrayList<String> listCondimentCalories(int calorie) {
+		String sql = "SELECT DISTINCT(p.portion_display_name) AS conta " + 
 				"FROM portion p " + 
 				"WHERE p.calories<? " ;
 		try {
@@ -123,15 +123,15 @@ public class FoodDao {
 			
 			st.setInt(1, calorie);
 			
-			ArrayList<Portion> list = new ArrayList<Portion>() ;
+			ArrayList<String> list = new ArrayList<String>() ;
 			
 			ResultSet res = st.executeQuery() ;
 			
 			while(res.next()) {
 				try {
-					list.add(new Portion(res.getInt("conta"),
+					list.add(
 							res.getString("nome")
-							));
+							);
 				} catch (Throwable t) {
 					t.printStackTrace();
 				}
@@ -148,7 +148,7 @@ public class FoodDao {
 	}
 
 	public ArrayList<Collegamento> getCollegamenti(int calorie) {
-		String sql = "SELECT p.portion_id AS p1, p.portion_display_name AS nome1, p2.portion_id AS p2, p2.portion_display_name AS nome2, COUNT(f.food_code) AS conto " + 
+		String sql = "SELECT p.portion_id AS p1, p.portion_display_name AS nome1, p2.portion_id AS p2, p2.portion_display_name AS nome2, COUNT(DISTINCT f.food_code) AS conto " + 
 				"FROM portion p, portion p2, food f " + 
 				"WHERE f.food_code=p.food_code AND f.food_code=p2.food_code AND p.calories<? AND p2.calories<? AND p.portion_id>p2.portion_id " + 
 				"GROUP BY p.portion_display_name, p.portion_display_name " ;
