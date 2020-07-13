@@ -112,7 +112,6 @@ public class FoodController {
     	
     	boxPorzioni.getItems().clear();
     	boxPorzioni.getItems().addAll(model.getVerticiGrafo()) ;
-    	
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
